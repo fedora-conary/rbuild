@@ -250,7 +250,7 @@ class ConaryFacade(object):
         @param targetLabel: label on which to create shadow
         @type targetLabel: string or B{opaque} conary.versions.Label
         @return: C{(name, version, flavor)} tuple specifying the newly-created
-        shadow.
+        or pre-existing shadow.
         @rtype: (string, string, string)
         """
         version = self._getVersion(version)
@@ -260,19 +260,19 @@ class ConaryFacade(object):
                         str(targetLabel),
                         [(name, version, flavor)])
         if item:
-            skipped, cs = item
+            existingShadow, cs = item
             if cs and not cs.isEmpty():
                 self._getRepositoryClient().commitChangeSet(cs)
-            if skipped:
-                return skipped[0]
+            if existingShadow:
+                return self._troveTupToStrings(*existingShadow[0])
             else:
                 return self._troveTupToStrings(
-                    *cs.iterNewTroves().next().getNewNameVersionFlavor())
+                    *cs.iterNewTroveList().next().getNewNameVersionFlavor())
         else:
             return False
 
     #pylint: disable-msg=R0913
-    # better than self, troveTup, targetDir
+    # too many args, but still better than self, troveTup, targetDir
     def checkoutBinaryPackage(self, name, version, flavor, targetDir,
                               quiet=True):
         """
@@ -317,7 +317,9 @@ class _QuietUpdateCallback(checkin.CheckinCallback):
     """
     Make checkout a bit quieter
     """
+    #pylint: disable-msg=W0613
+    # unused arguments
+    # implements an interface that may pass arguments that need to be ignored
     def setUpdateJob(self, *args, **kw):
         'stifle update announcement for extract'
-        pass
-
+        return
