@@ -35,8 +35,9 @@ class BuildPackagesCommand(command.BaseCommand):
             'message' : 'message describing why the commit was performed',
             'no-watch' : 'do not watch the job after starting the build',
             'no-commit' : 'do not automatically commit successful builds',
-            'no-recurse' : 'build exactly the packages listed on the '
-                'command line',
+            'no-recurse' : 'default behavior left for backwards compatibility',
+            'recurse' : 'build every package listed on the '
+                'command line plus all of its dependencies',
       }
 
 
@@ -45,6 +46,7 @@ class BuildPackagesCommand(command.BaseCommand):
         argDef['no-watch'] = command.NO_PARAM
         argDef['no-commit'] = command.NO_PARAM
         argDef['no-recurse'] = command.NO_PARAM
+        argDef['recurse'] = command.NO_PARAM
         argDef['refresh'] = command.NO_PARAM
         argDef['message'] = '-m', command.ONE_PARAM
 
@@ -53,7 +55,8 @@ class BuildPackagesCommand(command.BaseCommand):
     def runCommand(self, handle, argSet, args):
         watch = not argSet.pop('no-watch', False)
         commit = not argSet.pop('no-commit', False)
-        recurse = not argSet.pop('no-recurse', False)
+        recurse = argSet.pop('recurse', False)
+        argSet.pop('no-recurse', False)  # ignored, now the default
         refreshArg = argSet.pop('refresh', False)
         message = argSet.pop('message', None)
         success = True
