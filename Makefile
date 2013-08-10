@@ -61,15 +61,21 @@ show-version:
 	@echo $(VERSION)
 
 archive:
-	hg archive  --exclude .hgignore -t tbz2 rbuild-$(VERSION).tar.bz2
+	@rm -rf /tmp/rbuild-$(VERSION) /tmp/rbuild$(VERSION)-tmp
+	@mkdir -p /tmp/rbuild-$(VERSION)-tmp
+	@git archive --format tar $(VERSION) | (cd /tmp/rbuild-$(VERSION)-tmp/ ; tar x )
+	@mv /tmp/rbuild-$(VERSION)-tmp/ /tmp/rbuild-$(VERSION)/
+	@dir=$$PWD; cd /tmp; tar -c --bzip2 -f $$dir/rbuild-$(VERSION).tar.bz2 rbuild-$(VERSION)
+	@rm -rf /tmp/pesign-$(VERSION)
+	@echo "The archive is in rbuild-$(VERSION).tar.bz2"
 
 forcedist: archive
 
 forcetag:
-	hg tag -f rbuild-$(VERSION)
+	git tag --force $(VERSION) refs/heads/master
 
 tag:
-	hg tag rbuild-$(VERSION)
+	git tag $(VERSION) refs/heads/master
 
 clean: clean-subdirs default-clean
 
