@@ -66,7 +66,7 @@ archive:
 	@git archive --format tar $(VERSION) | (cd /tmp/rbuild-$(VERSION)-tmp/ ; tar x )
 	@mv /tmp/rbuild-$(VERSION)-tmp/ /tmp/rbuild-$(VERSION)/
 	@dir=$$PWD; cd /tmp; tar -c --bzip2 -f $$dir/rbuild-$(VERSION).tar.bz2 rbuild-$(VERSION)
-	@rm -rf /tmp/pesign-$(VERSION)
+	@rm -rf /tmp/rbuild-$(VERSION)
 	@echo "The archive is in rbuild-$(VERSION).tar.bz2"
 
 forcedist: archive
